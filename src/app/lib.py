@@ -17,15 +17,7 @@ DOMAIN_PATTERN = re.compile('^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$')
 
 def get_whois(query):
     """docstring for get_whois"""
-
-    # Clean up
-    query = query.strip()
-    query = query.replace('http://','')
-    query = query.replace('https://','')
-    if query[-1] == '/':
-        query = query[:-1]
-
-    # Check whether it is an ipv4 address
+    # Check whether it is a valid ip address
     try:
         ip = ipaddr.IPAddress(query)
         res = get_whois_ip(query)
@@ -61,3 +53,12 @@ def convert_newline(s):
     s = s.replace('\r\n', '<br/>')
     s = s.replace('\n', '<br/>')
     return s
+
+def query_clean(query):
+    """docstring for query_clean"""
+    query = query.strip()
+    query = query.replace('http://','')
+    query = query.replace('https://','')
+    if query[-1] == '/':
+        query = query[:-1]
+    return query

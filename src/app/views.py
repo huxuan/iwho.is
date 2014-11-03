@@ -7,8 +7,10 @@ Email: i(at)huxuan.org
 Description: views for app.
 """
 from flask import g
+from flask import redirect
 from flask import render_template
 from flask import request
+from flask import url_for
 from flask.ext.babel import gettext
 
 from app import app
@@ -32,6 +34,14 @@ def index():
         'form': forms.SearchForm(),
     }
     if context['form'].validate_on_submit():
-        context['result'] = lib.get_whois(context['form'].query.data)
-        return render_template('index.html', **context)
+        query = lib.query_clean(context['form'].query.data)
+        return redirect(url_for('whois', query=query))
+    return render_template('index.html', **context)
+
+@app.route('/whois/<query>')
+def whois(query):
+    context = {
+        'form': forms.SearchForm(),
+        'result': lib.get_whois(query)
+    }
     return render_template('index.html', **context)
