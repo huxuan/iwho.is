@@ -1,0 +1,50 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title%}iwho.is{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='custom.css')}}">
+{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">iwho.is</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="navbar">
+      <ul class="nav navbar-nav">
+          <li class="active"><a href="#">{{ _('Home') }}</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+          <li><a href="/?lang=zh">中文</a></li>
+          <li><a href="/?lang=en">English</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+{% endblock %}
+
+{% block content %}
+  <div class="footer">
+    <div class="container">
+      <p class="text-center text-muted">
+        <a href="http://linost.com/">{{ _('Proudly powered by Linost') }}</a>
+        {{ _('Author') }}:
+        <a href="http://xuan.hu/">{{ _('huxuan') }}</a>,
+        <a href="http://ttt.tt/">{{ _('Showfom') }}</a>
+      </p>
+    </div>
+  </div>
+{% endblock %}

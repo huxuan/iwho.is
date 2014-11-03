@@ -1,0 +1,7 @@
+flask
+flask-babel
+flask-bootstrap
+flask-wtf
+ipaddr
+ipwhois
+pythonwhois
