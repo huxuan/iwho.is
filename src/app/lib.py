@@ -46,7 +46,9 @@ def get_whois_ip(ip):
 
 def get_whois_domain(domain):
     """docstring for get_whois_domain"""
-    res = pythonwhois.net.get_whois_raw(domain)[0]
+    res = pythonwhois.net.get_whois_raw(domain)
+    res.reverse()
+    res = '\n'.join(res)
     return convert_newline(res)
 
 def convert_newline(s):
