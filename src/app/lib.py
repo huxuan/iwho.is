@@ -13,7 +13,13 @@ import ipaddr
 import ipwhois
 import pythonwhois
 
+from app import db
+# from app import tasks
+from app import thread
+
 DOMAIN_PATTERN = re.compile('^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$')
+REDIS_KEY_IP = 'iwhois_ip_%s'
+REDIS_KEY_DOMAIN = 'iwhois_domain_%s'
 
 def get_whois(query):
     """docstring for get_whois"""
@@ -40,16 +46,47 @@ def get_whois(query):
 
 def get_whois_ip(ip):
     """docstring for get_whois_ip"""
+    res = db.get(REDIS_KEY_IP % ip)
+    if res:
+        thread = threading.Thread(target=get_real_whois_ip, args=[ip])
+        thread.daemon = True
+        thread.start()
+        return res
+    else:
+        return get_real_whois_ip(ip)
+
+def get_real_whois_ip(ip):
+    """docstring for get_real_whois_ip"""
     ip = ipwhois.IPWhois(ip)
-    res = ip.lookup(inc_raw=True)['raw']
-    return convert_newline(res)
+    res = convert_newline(ip.lookup(inc_raw=True)['raw'])
+    db.set(REDIS_KEY_IP % ip, res)
+    return res
 
 def get_whois_domain(domain):
     """docstring for get_whois_domain"""
+    res = db.get(REDIS_KEY_DOMAIN % domain)
+    print repr(res)
+    if res:
+        print 'YES'
+        global thread
+        print 'YES'
+        # thread = threading.Thread(target=get_real_whois_domain, args=[domain])
+        print 'YES'
+        fuck
+        # tasks.put(thread)
+        print 'YES'
+        return res
+    else:
+        return get_real_whois_domain(domain)
+
+def get_real_whois_domain(domain):
+    """docstring for get_real_whois_domain"""
+    print 'FUCK'
     res = pythonwhois.net.get_whois_raw(domain)
     res.reverse()
-    res = '\n'.join(res)
-    return convert_newline(res)
+    res = convert_newline('\n'.join(res))
+    db.set(REDIS_KEY_DOMAIN % domain, 'NEW' + res)
+    return res
 
 def convert_newline(s):
     s = s.replace('\r\n', '<br/>')
