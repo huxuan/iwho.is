@@ -5,3 +5,4 @@ flask-wtf
 ipaddr
 ipwhois
 pythonwhois
+redis
