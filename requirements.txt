@@ -4,5 +4,6 @@ flask-bootstrap
 flask-wtf
 ipaddr
 ipwhois
+psutil
 pythonwhois
 redis
