@@ -13,9 +13,11 @@ import threading
 import ipaddr
 import ipwhois
 import pythonwhois
+import tldextract
 
 from app import db
 from app import tasks
+from whois import WHOIS_SERVER
 
 DOMAIN_PATTERN = re.compile('^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$')
 REDIS_KEY_IP = 'iwhois_ip_%s'
@@ -34,7 +36,7 @@ def get_whois(query):
     except ValueError:
         pass
 
-    domain = '.'.join(query.split('.')[-2:])
+    domain = tldextract.extract(query)
     try:
         res = get_whois_domain(domain)
         return {
@@ -61,7 +63,7 @@ def get_real_whois_ip(ip):
 
 def get_whois_domain(domain):
     """docstring for get_whois_domain"""
-    res = db.get(REDIS_KEY_DOMAIN % domain)
+    res = db.get(REDIS_KEY_DOMAIN % domain.registered_domain)
     if res:
         thread = threading.Thread(target=get_real_whois_domain, args=[domain])
         thread.daemon = True
@@ -72,10 +74,12 @@ def get_whois_domain(domain):
 
 def get_real_whois_domain(domain):
     """docstring for get_real_whois_domain"""
-    res = pythonwhois.net.get_whois_raw(domain)
+    server = WHOIS_SERVER.get(domain.suffix, '')
+    res = pythonwhois.net.get_whois_raw(domain.registered_domain, server=server,
+            never_cut=False)
     res.reverse()
     res = convert_newline('\n'.join(res))
-    db.set(REDIS_KEY_DOMAIN % domain, res)
+    db.set(REDIS_KEY_DOMAIN % domain.registered_domain, res)
     return res
 
 def convert_newline(s):
